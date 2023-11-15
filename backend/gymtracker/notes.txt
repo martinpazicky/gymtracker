@@ -1,0 +1,19 @@
+viewsets:
+apiview - sam vsetko
+genericapiview - queryset,serialiyer.. kombinacie s mixins, ptm len pisat get/post metody a zavolat retrieve/create z mixinov
+generic class based - netreba ani pisat get volanie na retrieve ..
+
+viewset - routing na retrieve, list ..
+genericviewset - querzset, serializer, kombinacie
+modelviewset - vsetky mixins
+
+
+prefetch:
+ked beres viac (workout) objektov a chces aj ich relations(exercises), oplati sa pouzit prefetch - v pythone vytvori pole 
+related ids a vypyta ich z db naraz (keby sa nepouzije robi sa query pre kazdy workout objekt)
+- ak beres jeden workout tak je to jedno
+- select_related to vypyta cez join ale funguje len pre one to many
+
+
+
+1. querz nenincludne note
