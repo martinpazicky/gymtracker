@@ -9,6 +9,11 @@ router.register(
     views.ExerciseRealizationViewSet,
     basename="workouts-exercises",
 )
+router.register(
+    "exercises/(?P<exercise_realization_id>[^/.]+)/sets",
+    views.ExerciseSetViewSet,
+    basename="exercises-sets",
+)
 
 urlpatterns = [
     path('home', views.homepage),

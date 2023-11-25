@@ -2,7 +2,9 @@
 from rest_framework import serializers
 from apps.core.models import Exercise, ExerciseRealization, ExerciseSet, Workout 
 
-class CreateExerciseSetSerializer(serializers.ModelSerializer):
+
+class ExerciseSetSerializer(serializers.ModelSerializer):
+    
     exercise_realization_id = serializers.IntegerField()
 
     def validate(self, attrs):
@@ -15,19 +17,17 @@ class CreateExerciseSetSerializer(serializers.ModelSerializer):
             )
         return super().validate(attrs)
     
-
-    class Meta:
-        model = ExerciseSet
-        fields = ('exercise_realization_id', 'reps', 'weight_kg', 'rest_sec', 'order')
-
-class ExerciseSetSerializer(serializers.ModelSerializer):
+    def to_representation(self, obj):
+        ret = super(serializers.ModelSerializer, self).to_representation(obj)
+        ret.pop('exercise_realization_id')
+        return ret 
     
     class Meta:
-        model = ExerciseSet
-        fields = ('reps', 'weight_kg', 'rest_sec', 'order')
+        model = ExerciseSet 
+        fields = ('id', 'exercise_realization_id', 'reps', 'weight_kg', 'rest_sec', 'order')
 
         
-class ExerciseRealizationSerializer(serializers.ModelSerializer):
+class ExerciseRealizationSerializer(serializers.ModelSerializer): #todo: merge with create serializer
     exercise_id = serializers.ReadOnlyField(source='exercise.id')
     name = serializers.ReadOnlyField(source='exercise.name')
     body_part = serializers.ReadOnlyField(source='exercise.body_part')

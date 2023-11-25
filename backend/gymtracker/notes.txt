@@ -17,3 +17,24 @@ related ids a vypyta ich z db naraz (keby sa nepouzije robi sa query pre kazdy w
 
 
 1. querz nenincludne note
+
+
+
+
+[{'sql': 'SELECT "core_user"."id", "core_user"."account_id", "core_user"."id_number", "core_user"."first_name" FROM "core_user" WHERE "core_user"."account_id" = 2 LIMIT 21', 'time': '0.000'}, {'sql': 'SELECT "core_workout"."id", "core_workout"."user_id", "core_workout"."name", "core_workout"."date", "core_workout"."routine" FROM "core_workout" WHERE "core_workout"."user_id" = 1 LIMIT 21', 'time': '0.000'}, {'sql': 'SELECT ("core_exerciserealization"."workout_id") AS "_prefetch_related_val_workout_id", "core_exercise"."id", "core_exercise"."name", "core_exercise"."body_part" FROM "core_exercise" INNER JOIN "core_exerciserealization" ON ("core_exercise"."id" = "core_exerciserealization"."exercise_id") WHERE "core_exerciserealization"."workout_id" IN (1, 2)', 'time': '0.000'}]
+[30/Oct/2023 14:18:29] "GET /workouts/2/ HTTP/1.1" 200 306
+
+- API design:
+niekedy moze byt jednoduchsie vytvorit endpoint na zadanie listu vsetkych objektov a na BE vsetky zmazat a pridat list, 
+namiesto ciastocnych uprav. Jednoduchsia implementacia aj na BE aj na FE, mensi priestor na chyby.
+Aplikovatelne len ked sa jedna o objekty ktore nemaju dalsie vztahy, napr ako exerciseset v tejto appke.
+rule of thumb: ked sa one to many rltionship da nahradit aj array fieldom v ramci tabulky, moze byt tento pristup vyhodny
+
+-- resource nesting 
+max do hlbky 2 collection/item/collection (microsoft best practice)
+pri hlbokom vnarani narasta komplexita, tazsie sa robia zmeny. vyhodou je ze je url citatelna (ale aj to len do istej miery)
+niekedy je vnaranie potrebne napr ak id je unique len v ramci parenta
+do hlbky 2 je vyhodne, keby to nieje v url musi sa parent aj tak poslat ako parameter (pri create)
+https://stackoverflow.com/questions/20951419/what-are-best-practices-for-rest-nested-resources
+https://www.moesif.com/blog/technical/api-design/REST-API-Design-Best-Practices-for-Sub-and-Nested-Resources/
+https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design

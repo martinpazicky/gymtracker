@@ -32,7 +32,7 @@ class ExerciseRealization(models.Model):
 
 class ExerciseSet(models.Model):
     exercise_realization = models.ForeignKey(ExerciseRealization, on_delete=models.CASCADE)
-    order = models.IntegerField()
+    order = models.IntegerField() #todo: rename to position, also add position to exercise realization
     reps = models.IntegerField()
     weight_kg = models.FloatField()
     rest_sec = models.IntegerField()
