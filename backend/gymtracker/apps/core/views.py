@@ -4,9 +4,9 @@ from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
-from apps.core.models import ExerciseRealization, ExerciseSet, Workout
+from apps.core.models import Exercise, ExerciseRealization, ExerciseSet, Workout
 from rest_framework.permissions import IsAuthenticated
-from apps.core.serializers import  CreateExerciseRealizationSerializer, EmbeddedRelationsWorkoutDetailSerializer, ExerciseRealizationSerializer, ExerciseSetSerializer, WorkoutDetailSerializer, WorkoutSerializer
+from apps.core.serializers import EmbeddedRelationsWorkoutDetailSerializer, ExerciseRealizationSerializer, ExerciseSerializer, ExerciseSetSerializer, WorkoutDetailSerializer, WorkoutSerializer
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -16,7 +16,7 @@ from apps.core.permissions import ExerciseSetViewSetOwnerships, ExerciseRealizat
 from django.db import transaction
 
 
-# Create your views here.
+# function views left here for demonstration purposes as alternative to viewsets
 @api_view()
 def homepage(request):
     workout = Workout.objects.all()[0]
@@ -31,7 +31,6 @@ def homepage(request):
 def workouts(request):
     acc = request.user
     user = acc.user
-    # prefetch_related
     workouts = Workout.objects.filter(user_id=user.id).all()
     #return JsonResponse(json.dumps(model_to_dict(workouts), default=str), safe=False)
     return JsonResponse(WorkoutSerializer(workouts, many=True).data, safe=False)
@@ -49,19 +48,12 @@ class WorkoutViewSet(viewsets.GenericViewSet, viewsets.mixins.RetrieveModelMixin
             if self.request.query_params.get('embed') is not None:
                 return EmbeddedRelationsWorkoutDetailSerializer
             return WorkoutDetailSerializer
-        if self.action == 'create':
-            return WorkoutDetailSerializer
         return WorkoutSerializer
     
     def perform_create(self, serializer):
          serializer.save(user=self.request.user.user)
 
 
-    def retrieve(self, request, *args, **kwargs):
-        workout = self.get_object()
-        serializer = self.get_serializer(workout)
-        return Response(serializer.data)
-    
     # Alternative to exerciserealization viewset - create custom action
     # @action(detail=True, methods=['get', 'post'])
     # def exercises_old(self, request, pk=None):
@@ -93,23 +85,13 @@ class ExerciseRealizationViewSet(viewsets.GenericViewSet, viewsets.mixins.ListMo
     queryset = ExerciseRealization.objects.all()
     serializer_class = ExerciseRealizationSerializer
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return CreateExerciseRealizationSerializer
-        return ExerciseRealizationSerializer
     
     def get_queryset(self):
         return ExerciseRealization.objects.filter(workout_id=self.kwargs['workout_id'])
     
     
-    def create(self, request, *args, **kwargs):
-        data = request.data.copy()
-        data['workout_id'] = self.kwargs['workout_id']
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=HTTP_201_CREATED, headers=headers)
+    def perform_create(self, serializer):
+         serializer.save(workout_id=self.kwargs['workout_id'])
     
     # kept for demonstration purposes LV3 nested urls - alternative to exercisesset viewset
     # @action(detail=True, methods=['post'], permission_classes=[*permission_classes, ExerciseRealizationBelongsToWorkout])
@@ -153,13 +135,11 @@ class ExerciseSetViewSet(viewsets.GenericViewSet, viewsets.mixins.CreateModelMix
 
     serializer_class = ExerciseSetSerializer
 
-    def get_serializer_class(self):
-        return ExerciseSetSerializer
-        
     def get_queryset(self):
         return ExerciseSet.objects.filter(exercise_realization_id=self.kwargs['exercise_realization_id'])
     
-
+    # whole create is overriden in order to move exercise_realization_id from request param to body, so that it can be used in validation
+    # if there was a way to access request params in serializer validation, this would not be needed
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
         data['exercise_realization_id'] = self.kwargs['exercise_realization_id']
@@ -168,3 +148,28 @@ class ExerciseSetViewSet(viewsets.GenericViewSet, viewsets.mixins.CreateModelMix
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=HTTP_201_CREATED, headers=headers)
+    
+
+
+class ExerciseDefinitionsViewSet(viewsets.ModelViewSet):
+    permission_classes = (
+        IsAuthenticated,
+    )
+    queryset = Exercise.objects.all() 
+
+    serializer_class = ExerciseSerializer
+
+    def get_serializer_class(self):
+        return ExerciseSerializer
+        
+    def get_queryset(self):
+        user_exercises = Exercise.objects.filter(user_id=self.request.user.user.id)
+        if self.action == 'destroy' or self.action == 'update' or self.action == 'partial_update':
+            return user_exercises
+        return user_exercises | Exercise.objects.filter(user_id=None) # user exercises + general exercises
+        
+
+    def perform_create(self, serializer):
+        serializer.validated_data['user_id'] = self.request.user.user.id
+        serializer.save()
+    

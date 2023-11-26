@@ -4,6 +4,7 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register(r"workouts", views.WorkoutViewSet)
+router.register(r"exercise_definitions", views.ExerciseDefinitionsViewSet)
 router.register(
     "workouts/(?P<workout_id>[^/.]+)/exercises",
     views.ExerciseRealizationViewSet,

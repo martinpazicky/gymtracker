@@ -12,7 +12,8 @@ class User(models.Model):
 
 
 class Exercise(models.Model):
-    name = models.CharField(max_length=40, default='')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) 
+    name = models.CharField(max_length=40)
     body_part = models.CharField(max_length=40, default='') # TODO: enum or another table, support more parts
 
 

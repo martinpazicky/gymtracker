@@ -4,7 +4,6 @@ from apps.core.models import Exercise, ExerciseRealization, ExerciseSet, Workout
 
 
 class ExerciseSetSerializer(serializers.ModelSerializer):
-    
     exercise_realization_id = serializers.IntegerField()
 
     def validate(self, attrs):
@@ -27,21 +26,11 @@ class ExerciseSetSerializer(serializers.ModelSerializer):
         fields = ('id', 'exercise_realization_id', 'reps', 'weight_kg', 'rest_sec', 'order')
 
         
-class ExerciseRealizationSerializer(serializers.ModelSerializer): #todo: merge with create serializer
-    exercise_id = serializers.ReadOnlyField(source='exercise.id')
+class ExerciseRealizationSerializer(serializers.ModelSerializer):
+    exercise_id = serializers.IntegerField()
     name = serializers.ReadOnlyField(source='exercise.name')
     body_part = serializers.ReadOnlyField(source='exercise.body_part')
-    note = serializers.CharField()
-    sets = ExerciseSetSerializer(source='exerciseset_set', many=True)
-
-    class Meta:
-        model = ExerciseRealization
-        fields = ('id', 'exercise_id', 'name', 'body_part', 'note', 'sets')
-
-class CreateExerciseRealizationSerializer(serializers.ModelSerializer):
-    exercise_id = serializers.IntegerField()
-    workout_id = serializers.IntegerField()
-    note = serializers.CharField(max_length=1000, required=False)
+    note = serializers.CharField(required=False)
     sets = ExerciseSetSerializer(source='exerciseset_set', many=True, read_only=True)
 
     def validate(self, attrs):
@@ -50,18 +39,17 @@ class CreateExerciseRealizationSerializer(serializers.ModelSerializer):
                 {"exercise_id": "Exercise with this id does not exist."}
             )
         return attrs
-
-
+    
     class Meta:
         model = ExerciseRealization
-        fields = ('exercise_id', 'workout_id', 'note', 'sets')
+        fields = ('id', 'exercise_id', 'name', 'body_part', 'note', 'sets')
 
 
 class ExerciseSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = Exercise
-        fields = '__all__'
+        fields = 'id', 'name', 'body_part'
 
 
 class EmbeddedRelationsWorkoutDetailSerializer(serializers.ModelSerializer):
@@ -79,9 +67,6 @@ class WorkoutDetailSerializer(serializers.ModelSerializer):
 
 
 class WorkoutSerializer(serializers.ModelSerializer):
-  
-    def create(self, validated_data):
-        return Workout.objects.create(**validated_data)
 
     class Meta:
         model = Workout

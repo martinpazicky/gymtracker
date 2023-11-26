@@ -9,11 +9,6 @@ from apps.core.models import ExerciseRealization, ExerciseSet, User, Workout, Ex
 from apps.accounts.models import Account
 
 
-NUM_USERS = 50
-NUM_CLUBS = 10
-NUM_THREADS = 12
-COMMENTS_PER_THREAD = 25
-USERS_PER_CLUB = 8
 
 class Command(BaseCommand):
     help = "Generates test data"
