@@ -32,7 +32,14 @@ class ExerciseRealizationSerializer(serializers.ModelSerializer):
     body_part = serializers.ReadOnlyField(source='exercise.body_part')
     note = serializers.CharField(required=False)
     sets = ExerciseSetSerializer(source='exerciseset_set', many=True, read_only=True)
-
+    previous_workout_id = serializers.SerializerMethodField(read_only=True)
+    
+    def get_previous_workout_id(self, exercise_realization):
+        previous_exercise_realization = ExerciseRealization.objects.filter(exercise_id=exercise_realization.exercise_id, workout__date__lt=exercise_realization.workout.date).order_by('-workout__date').first()
+        if previous_exercise_realization is not None:
+            return previous_exercise_realization.workout_id
+        return None
+    
     def validate(self, attrs):
         if not Exercise.objects.filter(id=attrs['exercise_id']).exists():
             raise serializers.ValidationError(
@@ -42,7 +49,7 @@ class ExerciseRealizationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ExerciseRealization
-        fields = ('id', 'exercise_id', 'name', 'body_part', 'note', 'sets')
+        fields = ('id', 'previous_workout_id', 'exercise_id', 'name', 'body_part', 'note', 'sets')
 
 
 class ExerciseSerializer(serializers.ModelSerializer):
