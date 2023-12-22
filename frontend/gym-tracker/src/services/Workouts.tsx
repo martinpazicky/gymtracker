@@ -15,6 +15,7 @@ export type ExerciseSet = {
 
 export type ExerciseRealization = {
     id: number
+    previous_workout_id?: number
     exercise_id: number
     name: string
     body_part: string

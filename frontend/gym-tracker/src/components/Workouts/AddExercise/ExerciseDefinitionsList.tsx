@@ -9,8 +9,8 @@ type ExerciseDefinitionsListProps = {
 }
 
 export default function ExerciseDefinitionsList(props: ExerciseDefinitionsListProps) {
-
-    const itemList = props.data
+  
+    const itemList = props.data;
     
     const [filteredList, setFilteredList] = useState(itemList);
 

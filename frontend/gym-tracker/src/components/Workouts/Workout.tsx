@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ExerciseRealization, addExercise, getWorkout } from '../../services/Workouts';
 import { HttpStatusCode } from 'axios';
 import ExerciseSetListComponent from './ExerciseSetList';
 
 import ReactModal from 'react-modal';
 import AddExerciseModalComponent from './AddExercise/AddExerciseModal';
-import { stat } from 'fs';
+import Paths from '../../routes/Paths';
 
-ReactModal.setAppElement('#root');
 
 
 export default function ViewWorkout() {
     const { workoutId } = useParams() as { workoutId: string };
-
+    console.log(workoutId)
     const [title, setTitle] = useState<string>('');
     const [routine, setRoutine] = useState<string>('');
     const [exercises, setExercises] = useState<ExerciseRealization[]>([]);
@@ -31,9 +30,8 @@ export default function ViewWorkout() {
     function handleAddExercise(idToAdd: number) {
         addExercise(Number(workoutId), idToAdd).then(({data, status})=> {
             if (status == HttpStatusCode.Created){
-                const exercisesCopy = [...exercises];
-                exercisesCopy.push(data);
-                setExercises(exercisesCopy);
+                exercises.push(data);
+                setExercises(exercises);
             }
             else
                 alert("Something went wrong")
@@ -52,7 +50,7 @@ export default function ViewWorkout() {
                 alert("Workout not found")      
             }
         })
-    }, []);
+    }, [workoutId]);
     
     
     return (
@@ -64,11 +62,12 @@ export default function ViewWorkout() {
             <ul>
                 {exercises.map((exercise) => 
                 <li key={exercise.id}> {exercise.name} {exercise.body_part} {exercise.note}
+                 {exercise.previous_workout_id ? <Link to={Paths.WORKOUTS + (exercise.previous_workout_id)}> Previous performance </Link> : ""}
                     <ExerciseSetListComponent key={0} exerciseId={exercise.id} sets={exercise.sets}></ExerciseSetListComponent>
                 </li>)}
             </ul>
 
-            <button onClick={handleOpenModal}>Trigger Modal</button>
+            <button onClick={handleOpenModal}>Add Exercise</button>
             <AddExerciseModalComponent 
                 IsModalOpened={showModal}
                 onCloseModal={handleCloseModal}
