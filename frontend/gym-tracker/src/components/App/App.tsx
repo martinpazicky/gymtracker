@@ -1,11 +1,8 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Link } from 'react-router-dom';
 import Login from '../Login/Login';
 import useToken from '../../hooks/useToken';
-import Workouts from '../Workouts/Workouts';
-import CreateWorkout from '../Workouts/CreateWorkout';
-import ViewWorkout from '../Workouts/Workout';
 import Router from '../../routes/Router';
 import Paths from '../../routes/Paths';
 
@@ -25,10 +22,13 @@ function App() {
                 <Link to={Paths.WORKOUTS}>Workouts</Link>
               </li>
               <li>
+                <Link to={Paths.VIEW_EXERCISES}>Exercises</Link>
+              </li>
+              <li>
                 <Link to={Paths.HOME}>Home</Link>
               </li>
         </ul>
-          <Router/>
+        <Router/>
       </BrowserRouter>
 		</div>
   );

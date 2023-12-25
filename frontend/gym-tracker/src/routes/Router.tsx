@@ -4,6 +4,7 @@ import Workouts from '../components/Workouts/Workouts';
 import CreateWorkout from '../components/Workouts/CreateWorkout';
 import ViewWorkout from '../components/Workouts/Workout';
 import Paths from './Paths';
+import ExerciseDefinitions from '../components/ExerciseDefinitions/ExerciseDefinitions';
 
 const Router = () => (
     <Routes>
@@ -11,6 +12,7 @@ const Router = () => (
           <Route path={Paths.WORKOUTS} element={<Workouts/>}></Route>
           <Route path={Paths.VIEW_WORKOUT} element={<ViewWorkout/>}></Route>
           <Route path={Paths.CREATE_WORKOUT} element={<CreateWorkout/>}></Route>
+          <Route path={Paths.VIEW_EXERCISES} element={<ExerciseDefinitions/>}></Route>
     </Routes>
   );
   

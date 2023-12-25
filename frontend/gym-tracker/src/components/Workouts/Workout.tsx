@@ -3,8 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import { ExerciseRealization, addExercise, getWorkout } from '../../services/Workouts';
 import { HttpStatusCode } from 'axios';
 import ExerciseSetListComponent from './ExerciseSetList';
-
-import ReactModal from 'react-modal';
 import AddExerciseModalComponent from './AddExercise/AddExerciseModal';
 import Paths from '../../routes/Paths';
 
