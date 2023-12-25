@@ -41,6 +41,9 @@ https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design
 
 
 
+-- queries
+raw query sa da volat aj na managerovi, vtedy vrati model objekt
+
 
 
 
