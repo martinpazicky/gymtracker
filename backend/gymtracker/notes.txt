@@ -10,9 +10,12 @@ modelviewset - vsetky mixins
 
 prefetch:
 ked beres viac (workout) objektov a chces aj ich relations(exercises), oplati sa pouzit prefetch - v pythone vytvori pole 
-related ids a vypyta ich z db naraz (keby sa nepouzije robi sa query pre kazdy workout objekt)
+related ids a vypyta ich z db naraz (keby sa nepouzije robi sa pri iterovani workout query resultu a odkazovani na polia 
+exercises query pre kazdy workout objekt)
 - ak beres jeden workout tak je to jedno
-- select_related to vypyta cez join ale funguje len pre one to many
+- select_related to vypyta cez join ale funguje len pre one to many, resp priame vztahy (model A ma v sebe foreign key na B a dopytujeme model A.sel_related)
+- prefetch moze byt niekedy vyhodny aj pri onetomany/onetoone, ked su polia foreign objektu pristupovane len obcasne (vykona sa sice query navyse
+  ale nemusi sa vytvorit obrovska joinnuta tabulka v db a druha query bude rychla / obsahuje malo entries) 
 
 
 

@@ -34,7 +34,8 @@ class ExerciseRealizationSerializer(serializers.ModelSerializer):
     sets = ExerciseSetSerializer(source='exerciseset_set', many=True, read_only=True)
     previous_workout_id = serializers.SerializerMethodField(read_only=True)
     
-    def get_previous_workout_id(self, exercise_realization):
+    # inefficient as it makes a query for each exercise realization, could probably be optimized with prefetching TODO:
+    def get_previous_workout_id(self, exercise_realization): 
         previous_exercise_realization = ExerciseRealization.objects.filter(exercise_id=exercise_realization.exercise_id, workout__date__lt=exercise_realization.workout.date).order_by('-workout__date').first()
         if previous_exercise_realization is not None:
             return previous_exercise_realization.workout_id
@@ -59,8 +60,19 @@ class ExerciseSerializer(serializers.ModelSerializer):
         fields = 'id', 'name', 'body_part'
 
 
+# inefficient, makes too many queries, can be optimized with prefetching
 class EmbeddedRelationsWorkoutDetailSerializer(serializers.ModelSerializer):
     exercises = ExerciseRealizationSerializer(source='exerciserealization_set', many=True)
+
+    # https://ses4j.github.io/2015/11/23/optimizing-slow-django-rest-framework-performance/
+    @staticmethod
+    def setup_eager_loading(queryset):
+        # the second alternative with prefetch for the exercises could be more efficient as the fetched data tend to be sparse 
+        # although the first alternative would save one query 
+        # workouts = workouts.prefetch_related(Prefetch('exerciserealization_set', queryset=ExerciseRealization.objects.select_related('exercise')) \
+        #                                                                                   , Prefetch('exerciserealization_set__exerciseset_set'))
+        queryset = queryset.prefetch_related('exerciserealization_set__exercise', 'exerciserealization_set__exerciseset_set')   
+        return queryset  
 
     class Meta:
         model = Workout

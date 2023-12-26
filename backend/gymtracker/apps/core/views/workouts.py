@@ -4,6 +4,7 @@ from apps.core.models import ExerciseRealization, Workout
 from rest_framework.permissions import IsAuthenticated
 from apps.core.serializers import EmbeddedRelationsWorkoutDetailSerializer, WorkoutDetailSerializer, WorkoutSerializer
 from rest_framework import viewsets
+from django.db.models import Prefetch
 
 
 # function views left here for demonstration purposes as alternative to viewsets
@@ -31,8 +32,11 @@ class WorkoutViewSet(viewsets.GenericViewSet, viewsets.mixins.RetrieveModelMixin
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):   
-        return Workout.objects.filter(user_id=self.request.user.user.id)
-        
+        queryset =  Workout.objects.filter(user_id=self.request.user.user.id)
+        if self.request.query_params.get('embed') is not None:
+            queryset = EmbeddedRelationsWorkoutDetailSerializer.setup_eager_loading(queryset)
+        return queryset
+    
     def get_serializer_class(self):
         if self.action == 'retrieve':
             if self.request.query_params.get('embed') is not None:
