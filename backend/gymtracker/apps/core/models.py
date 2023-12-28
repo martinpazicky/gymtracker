@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.db.models import Subquery, OuterRef
 
 
 class User(models.Model):
@@ -23,6 +24,12 @@ class Workout(models.Model):
     date = models.DateTimeField(default=timezone.now)
     exercises = models.ManyToManyField(Exercise, through='ExerciseRealization')
     routine = models.CharField(max_length=50, default='no')
+
+    def get_annotated_exercise_realizations(self):
+        # select related could be used on exercises to avoid extra queries (reason described in serializers.py setup_eager_loading)
+        return ExerciseRealization.objects.filter(workout_id=self.id).annotate(previous_workout_id=Subquery(ExerciseRealization.objects.filter( \
+            workout__date__lt=self.date, exercise_id=OuterRef('exercise_id')).order_by('-workout__date').values('workout_id')[:1])) \
+                .prefetch_related('exercise', 'exerciseset_set')
 
 
 class ExerciseRealization(models.Model):

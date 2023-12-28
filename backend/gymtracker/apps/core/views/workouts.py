@@ -33,8 +33,8 @@ class WorkoutViewSet(viewsets.GenericViewSet, viewsets.mixins.RetrieveModelMixin
 
     def get_queryset(self):   
         queryset =  Workout.objects.filter(user_id=self.request.user.user.id)
-        if self.request.query_params.get('embed') is not None:
-            queryset = EmbeddedRelationsWorkoutDetailSerializer.setup_eager_loading(queryset)
+        # if self.request.query_params.get('embed') is not None:
+        #     queryset = EmbeddedRelationsWorkoutDetailSerializer.setup_eager_loading(queryset)
         return queryset
     
     def get_serializer_class(self):
@@ -46,7 +46,6 @@ class WorkoutViewSet(viewsets.GenericViewSet, viewsets.mixins.RetrieveModelMixin
     
     def perform_create(self, serializer):
          serializer.save(user=self.request.user.user)
-
 
     # Alternative to exerciserealization viewset - create custom action
     # @action(detail=True, methods=['get', 'post'])
