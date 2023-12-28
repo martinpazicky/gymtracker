@@ -1,4 +1,3 @@
-# uneffective queries when requesting workouts with embeded exercises
 from rest_framework import serializers
 from apps.core.models import Exercise, ExerciseRealization, ExerciseSet, Workout 
 
