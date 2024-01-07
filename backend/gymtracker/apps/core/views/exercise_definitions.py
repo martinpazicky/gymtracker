@@ -45,7 +45,7 @@ class ExerciseDefinitionsViewSet(viewsets.ModelViewSet):
             reps=Subquery(heaviest_set_subquery.values('reps'), output_field=IntegerField()),
             rest_sec=Subquery(heaviest_set_subquery.values('rest_sec'), output_field=IntegerField())
         ).values('weight_kg', 'reps', 'rest_sec', exercise_id=F('pk'), exercise_name=F('name')).distinct()
-
+        # heaviest_sets = [{'exercise_id': row['exercise_id'], 'best_set': {'weight_kg': row['weight_kg'], 'reps': row['reps'], 'rest_sec': row['rest_sec']}} for row in heaviest_sets]
         # 2. approach without calling subqueries multiple times, but the queries look even more inefficient
         # heaviest_sets_x = self.get_queryset().prefetch_related( 
         #     Prefetch(
