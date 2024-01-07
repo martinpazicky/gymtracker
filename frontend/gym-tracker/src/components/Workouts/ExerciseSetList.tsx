@@ -28,7 +28,7 @@ const ExerciseSetListComponent: React.FC<ExerciseSetListProps> = (props: Exercis
             <ul>
                 {exerciseSets.map((set) => 
                 <li key={set.order}>
-                    <ExerciseSetComponent key={set.order} exerciseId={props.exerciseId} set={set}></ExerciseSetComponent>
+                    <ExerciseSetComponent key={set.order} exerciseId={props.exerciseId} set={set} edit={true}></ExerciseSetComponent>
                 </li>)}
             </ul>
             <button type="button" onClick={handleAdd}>

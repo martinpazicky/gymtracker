@@ -1,16 +1,16 @@
 import debounce from "lodash.debounce";
 import { ExerciseSet, ExerciseSetInput, updateSet } from "../../services/Workouts";
 import React, { useCallback, useState } from "react";
-import exp from "constants";
 
 type ExerciseSetProps = {
     exerciseId: number;
     set: ExerciseSet;
+    edit: boolean;
 }
 
 
 const ExerciseSetComponent: React.FC<ExerciseSetProps> = (props: ExerciseSetProps) => {
-    const [edit, setEdit] = useState(false);
+    const [edit, setEdit] = useState(props.edit);
     const [exerciseSet, setExerciseSet] = useState<ExerciseSet>(props.set);
 
     function apiCall(set: ExerciseSetInput, setId: number) {
@@ -42,16 +42,19 @@ const ExerciseSetComponent: React.FC<ExerciseSetProps> = (props: ExerciseSetProp
                 type="number"
                 defaultValue={exerciseSet.reps}
                 onChange={(e) => handleEdit('reps', e, true)}
+                readOnly={!edit}
             />
              <input
                 type="number"
                 defaultValue={exerciseSet.weight_kg}
                 onChange={(e) => handleEdit('weight_kg', e)}
+                readOnly={!edit}
             />
              <input
                 type="number"
                 defaultValue={exerciseSet.rest_sec}
                 onChange={(e) => handleEdit('rest_sec', e)}
+                readOnly={!edit}
             />
         </div>
     );
