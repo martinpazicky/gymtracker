@@ -1,0 +1,39 @@
+version: "3.9"
+   
+services:
+  db:
+    image: postgres
+    user: postgres
+    environment:
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - "0.0.0.0:5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+  gymtracker-be:
+      build: ./backend/gymtracker/
+      command: bash -c "python manage.py migrate && python manage.py generatedata && python manage.py runserver 0.0.0.0:8000"
+      ports:
+        - "8000:8000"
+      environment:
+        - POSTGRES_NAME=postgres
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=1234
+        - POSTGRES_HOST=db 
+        - POSTGRES_PORT=5432
+        - SECRET_KEY=secretkey-gymtracker
+      depends_on:
+        db:
+          condition: service_healthy
+  gymtracker-fe:
+    build: ./frontend/gym-tracker/
+    ports:
+      - "3000:3000"
+volumes:
+  pg_data:
+    driver: local

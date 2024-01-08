@@ -14,6 +14,7 @@ class AccountFactory(DjangoModelFactory):
 class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
+  
     account = factory.SubFactory(AccountFactory)
     id_number = factory.Sequence(lambda n: '{}'.format(n))
     first_name = factory.Faker("first_name")

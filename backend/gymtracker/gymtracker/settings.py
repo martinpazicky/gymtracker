@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 import sys
 
+from dotenv import load_dotenv
+load_dotenv()
+
 PROJECT_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(PROJECT_ROOT, 'apps'))
 
@@ -25,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*bd!k1$u0f7q^wrdgr05)0r_&py-2f32$-prvd+!d4_d$&@@18'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -97,11 +100,11 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'gymtracker', 
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': '127.0.0.1', 
-        'PORT': '5432',
+        'NAME': os.environ.get('POSTGRES_NAME'), 
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'), 
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
 
