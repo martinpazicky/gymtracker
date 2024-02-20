@@ -53,3 +53,10 @@ raw query sa da volat aj na managerovi, vtedy vrati model objekt
 https://stackoverflow.com/questions/45890657/django-rest-framework-viewset-permission-based-on-method
 mix:
 - nezabudat na partial_update action
+
+
+- csrf
+potrebne hlavne pri session auth ak sa sessionid uklada do cookie
+bezne sa generuje hidden field s hodnotou ktoru treba poslat (relevantne pre django fullstack)
+pri rest api a session auth: nastavi sa cookie s csrftoken, ten treba na fe citat a nastavit do header, extra protekcia by mala spocivat v tom, ze utocnik pri csrf
+nevie citat cookie a nastavit ju do headera (je z inej domeny)
